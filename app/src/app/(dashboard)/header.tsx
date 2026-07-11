@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { Activity, LogOut, ChevronDown } from "lucide-react"
+import { usePathname } from "next/navigation"
+import { Activity, LogOut, Users } from "lucide-react"
 import { logout } from "../(auth)/login/actions"
 
 interface DashboardHeaderProps {
@@ -26,11 +27,33 @@ const roleInitials: Record<string, string> = {
   patient: "PA",
 }
 
+interface NavItem {
+  label: string
+  href: string
+  icon: React.ReactNode
+  roles?: string[]
+}
+
+const navItems: NavItem[] = [
+  {
+    label: "User Management",
+    href: "/admin/users",
+    icon: <Users className="h-4 w-4" />,
+    roles: ["admin"],
+  },
+]
+
 export default function DashboardHeader({
   userName,
   roleName,
   dashboardUrl,
 }: DashboardHeaderProps) {
+  const pathname = usePathname()
+
+  const filteredNav = navItems.filter(
+    (item) => !item.roles || item.roles.includes(roleName)
+  )
+
   return (
     <header className="bg-white border-b border-border/50 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -44,14 +67,23 @@ export default function DashboardHeader({
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
-            {roleName === "admin" && (
-              <Link
-                href="/admin/users"
-                className="px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              >
-                User Management
-              </Link>
-            )}
+            {filteredNav.map((item) => {
+              const isActive = pathname === item.href
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isActive
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              )
+            })}
           </nav>
         </div>
 
