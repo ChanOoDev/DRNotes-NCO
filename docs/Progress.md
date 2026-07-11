@@ -1,59 +1,93 @@
-# Project Progress
+# Progress
+
+## Current Phase: Phase 1: Product
 
 ## GitHub Configuration
 
-- **Code Repo:** ChanOoDev/drnotes (code, branches, PRs)
+- **Code Repo:** ChanOoDev/DRNotes-NCO (code, branches, PRs)
 - **Issue Tracker:** SiThuTun-mdy/Dr-Note (issues, project board)
 - **Project ID:** PVT_kwHOAOdsvc4BdB7j
 
-## Current Phase
+---
 
-Phase 4: Development (Active)
+## Project Status
 
-## Completed
+### ✅ Done
 
-### Documentation & Planning
-- Initial Project Brief created
-- Product documentation (PRD)
-- Architecture document
-- Sprint planning
-- Project scaffolded (Next.js + Supabase)
-- Supabase configured (database migrated, tables created)
+| Task | Status |
+|------|--------|
+| DB Schema | Done |
+| Clinical notes: typed notes during consult (doctor) | Done |
+| Project scaffolded | Done |
 
-### User Stories
-- **US-001: Authentication** — Login, logout, middleware, user profile (branches: feat/auth-*)
-- **US-002: Role-Based Access Control** — Database schema, RLS policies, helper functions, TypeScript types
-- **US-003: Doctor Management** — Validation, server actions, UI components, pages (branch: feat/doctor-management)
-- **US-004: Patient Registration** — Full CRUD with RLS (branch: feat/patient-registration)
-- **US-006: Patient Profile View** — Patient profile display (branch: feat/patient-profile-view)
-- **US-007: Consultation Notes** — Consultation CRUD (branch: feat/consultation-notes)
-- **US-008: Patient History** — Patient history view (branch: feat/patient-history)
-- **US-009: Dashboard** — Stats and recent consultations (branch: feat/dashboard)
-- **TASK-019:** Seed script with test users, doctors, patients, consultations
+### 🔄 In Progress
 
-### Fixes & Improvements
-- Fixed database schema mismatch (users -> profiles)
-- Security, accessibility, and UX improvements
+| Task | Status |
+|------|--------|
+| Test 1 | Ready |
+| Sprint planning | In Progress |
+| Development | In Progress |
 
-## In Progress
+### 📋 Backlog
 
-- **US-010: PDF Export** — (branch: feat/pdf-export-impl)
+| Task | Epic |
+|------|------|
+| Scaffold Next.js 14 app + repo structure + branch strategy | Infra, CI/CD & Database Setup |
+| Supabase project setup + environment config | Infra, CI/CD & Database Setup |
+| Implement DB schema in Supabase (full ERD) | Infra, CI/CD & Database Setup |
+| CI/CD: Vercel deploy + GitHub Actions (lint, typecheck, build) | Infra, CI/CD & Database Setup |
+| Seed data: roles, permissions, diagnosis catalog, demo users | Infra, CI/CD & Database Setup |
+| Supabase Auth: email/password login + logout + session | Auth & User Management |
+| RBAC: roles/permissions tables wired + RLS policies | Auth & User Management |
+| Protected routes + role-based navigation/middleware | Auth & User Management |
+| Admin user management screen | Auth & User Management |
+| Patient registration form (demographics) | User Registration (Patient, Staff, Admin) |
+| Staff onboarding: create doctor/nurse/receptionist accounts | User Registration (Patient, Staff, Admin) |
+| Patient profile page (view/edit) | User Registration (Patient, Staff, Admin) |
+| Emergency contacts (add/edit/remove on patient profile) | User Registration (Patient, Staff, Admin) |
+| Visit creation flow (receptionist) | Record Taking (Visit, Screening, Diagnosis, Prescription) |
+| Visit status workflow + patient queue view | Record Taking (Visit, Screening, Diagnosis, Prescription) |
+| Screening form: vitals (nurse) | Record Taking (Visit, Screening, Diagnosis, Prescription) |
+| Diagnosis entry: catalog picker + visit diagnoses | Record Taking (Visit, Screening, Diagnosis, Prescription) |
+| Clinical notes: typed notes during consult (doctor) | Record Taking (Visit, Screening, Diagnosis, Prescription) |
+| Role-based access to history | History Management (role-based access) |
+| Patient & visit search + filters | History Management (role-based access) |
+| Test plan + manual demo checklist | Testing |
+| E2E happy-path test (patient reg -> visit -> rx -> history) | Testing |
+| Demo script + demo data walkthrough (15 Jul) | Testing |
 
-## Pending
+---
 
-- **US-005: Patient Search** — Not started
-- Review, QA, Release management for completed stories
-- CI/CD pipeline setup
-- Vercel deployment
-- Sentry error tracking setup (guide ready: `docs/guide/05-sentry-setup.md`)
-- Branch protection rules (guide ready: `docs/guide/06-branch-protection.md`)
+## Epics
 
-## Blockers
+| Epic | Status |
+|------|--------|
+| Infra, CI/CD & Database Setup | Backlog |
+| Auth & User Management | Backlog |
+| User Registration (Patient, Staff, Admin) | Backlog |
+| Record Taking (Visit, Screening, Diagnosis, Prescription) | Backlog |
+| History Management (role-based access) | Backlog |
 
-None
+---
 
-## Next Recommended Command
+## Documents Imported
 
-```text
-/next-task
-```
+| Document | Location |
+|----------|----------|
+| Database Schema (ERD) | `docs/guide/01-database-schema.md` |
+| Architecture | `docs/guide/02-architecture.md` |
+| Design System | `docs/guide/03-design-system.md` |
+| UI Design | `docs/guide/04-ui-design.md` (empty) |
+| Sentry Setup | `docs/guide/05-sentry-setup.md` |
+| Branch Protection | `docs/guide/06-branch-protection.md` |
+
+---
+
+## Standard Doc Locations
+
+| Document | Location |
+|----------|----------|
+| PRD / Architecture | `docs/02-PRD.md` |
+| Architecture Guide | `docs/12-Architecture.md` |
+| ERD / Database Schema | `docs/13-ERD.md` |
+| Design System | `docs/guide/03-design-system.md` (keep in guide/) |
