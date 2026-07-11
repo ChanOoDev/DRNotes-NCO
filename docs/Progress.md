@@ -19,14 +19,17 @@
 | DB Schema | Done |
 | Clinical notes: typed notes during consult (doctor) | Done |
 | Project scaffolded | Done |
+| Scaffold Next.js 14 app + repo structure + branch strategy | Done (#11) |
+| Seed data: roles, permissions, diagnosis catalog, demo users | Done (#15) |
+| RBAC: roles/permissions tables wired + RLS policies | Done (#17) |
+| Supabase Auth: email/password login + logout + session | Done (#16) |
 
 ### 🔄 In Progress
 
 | Task | Status |
 |------|--------|
-| Test 1 | Ready |
-| Sprint planning | In Progress |
-| Development | In Progress |
+| Protected routes + role-based navigation/middleware | Next (#18) |
+| Admin user management screen | Pending (#19) |
 
 ### 📋 Backlog
 
