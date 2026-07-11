@@ -23,12 +23,12 @@
 | Seed data: roles, permissions, diagnosis catalog, demo users | Done (#15) |
 | RBAC: roles/permissions tables wired + RLS policies | Done (#17) |
 | Supabase Auth: email/password login + logout + session | Done (#16) |
+| Protected routes + role-based navigation/middleware | Done (#18) |
 
 ### 🔄 In Progress
 
 | Task | Status |
 |------|--------|
-| Protected routes + role-based navigation/middleware | Next (#18) |
 | Admin user management screen | Pending (#19) |
 
 ### 📋 Backlog
