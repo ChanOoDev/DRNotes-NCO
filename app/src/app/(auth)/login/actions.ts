@@ -133,3 +133,9 @@ export async function login(values: LoginInput): Promise<LoginResult> {
 
   redirect(target)
 }
+
+export async function logout() {
+  const supabase = await createClient()
+  await supabase.auth.signOut()
+  redirect("/login")
+}
