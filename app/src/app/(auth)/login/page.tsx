@@ -119,11 +119,11 @@ export default function LoginPage() {
 
           <div className="mt-6 border-t pt-4">
             <p className="text-xs text-muted-foreground text-center mb-2">Dev Credentials (Password: Demo@1234)</p>
-            <div className="grid grid-cols-2 gap-1 text-xs text-muted-foreground">
-              <span>Admin</span><span>admin@drnote.com</span>
-              <span>Doctor</span><span>doctor@drnote.com</span>
-              <span>Nurse</span><span>nurse@drnote.com</span>
-              <span>Receptionist</span><span>receptionist@drnote.com</span>
+            <div className="space-y-1 text-xs text-muted-foreground text-center">
+              <p>Admin: admin@drnote.com</p>
+              <p>Doctor: doctor@drnote.com</p>
+              <p>Nurse: nurse@drnote.com</p>
+              <p>Receptionist: receptionist@drnote.com</p>
             </div>
           </div>
         </CardContent>
