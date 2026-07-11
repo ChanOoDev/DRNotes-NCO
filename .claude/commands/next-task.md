@@ -190,19 +190,22 @@ git push origin feat/<scope>-<short-description>
 
 The QA agent will:
 1. Run automated checks (ESLint, TypeScript, Build)
-2. Validate acceptance criteria from the issue
-3. Test the implementation against requirements
-4. Generate test results and bug reports
+2. **Create unit tests** for all implemented functions/components
+3. Validate acceptance criteria from the issue
+4. Test the implementation against requirements
+5. Generate test results and bug reports
 
 **QA Agent validates:**
 - [ ] ESLint passes (`npm run lint`)
 - [ ] TypeScript compiles (`npx tsc --noEmit`)
 - [ ] Build succeeds (`npm run build`)
+- [ ] Unit tests created and passing
 - [ ] Acceptance criteria met
 - [ ] No Critical/High bugs
 
 The QA agent will return:
 - Test results (passed/failed/skipped)
+- **Unit test coverage report**
 - Acceptance criteria status
 - Bug list (if any)
 - Ready for release: true/false
