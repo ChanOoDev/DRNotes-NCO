@@ -14,6 +14,7 @@ Responsibilities:
 - Create bug reports.
 - Run regression after fixes.
 - Create release readiness report.
+- **Record test results** in `docs/{epic}/{test-name}-{yyyyMMddHHmm}.md`
 
 ## Unit Test Requirements
 
@@ -24,6 +25,22 @@ For every task, create unit tests covering:
 - **Helpers/utilities**: Test all code paths
 
 Test file location: `__tests__/` folder adjacent to the source file, or `tests/` at project root.
+
+## Test Results Recording
+
+After running tests, save results to:
+```
+docs/{epic}/{test-name}-{yyyyMMddHHmm}.md
+```
+
+Example: `docs/epic-auth/test-login-validation-202607112130.md`
+
+Include in the report:
+- Test summary (passed/failed/skipped)
+- Test file location
+- Acceptance criteria status
+- Any bugs found
+- Timestamp
 
 Do not approve release if Critical or High bugs remain.
 
