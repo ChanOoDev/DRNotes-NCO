@@ -203,6 +203,47 @@ CREATE TRIGGER profiles_updated_at
 - ❌ Hardcoding table names instead of using schema
 - ❌ Not maintaining migrations (using dashboard SQL editor)
 
+## MCP Setup (Supabase Server)
+
+The Supabase MCP server lets Claude query your database directly.
+
+### Option A: Global Config (Recommended)
+
+Each developer runs this once:
+```bash
+claude mcp add --scope user supabase -- npx -y @supabase/mcp-server-supabase@latest --access-token sbp_THEIR_TOKEN
+```
+
+Config saved to `~/.claude/.mcp.json` (never committed).
+
+### Option B: Project Config
+
+Create `.mcp.json` in project root:
+```json
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "sbp_YOUR_TOKEN_HERE"
+      ]
+    }
+  }
+}
+```
+
+**⚠️ SECURITY:** `.mcp.json` is in `.gitignore` — never commit real tokens.
+
+### Verify MCP Works
+
+Run `/supabase-setup` to check status. If MCP is available, you can:
+- Query tables directly
+- Apply migrations via MCP
+- Check database health
+
 ## Checklist
 
 - [ ] RLS enabled on all business tables
@@ -211,3 +252,4 @@ CREATE TRIGGER profiles_updated_at
 - [ ] Migrations in `supabase/migrations/`
 - [ ] Seed data in `supabase/seed.sql`
 - [ ] Environment variables documented
+- [ ] MCP configured (global or project level)

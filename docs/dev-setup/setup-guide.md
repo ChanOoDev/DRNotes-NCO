@@ -682,6 +682,30 @@ Consider upgrading when:
 
 ## 11. Troubleshooting
 
+### Claude Code Permission Prompts
+
+When running commands like `/import-project`, `/next-task`, or any `gh` CLI commands, Claude Code will ask for permission before executing shell commands.
+
+**Symptom:** Commands appear to "not work" or fail silently.
+
+**Cause:** The permission prompt was rejected (clicked "reject" or "Deny").
+
+**Fix:**
+1. When you see a permission prompt, click **"Allow"** or **"Always allow"**
+2. For `gh` commands (GitHub CLI), always allow — they are safe read/write operations
+3. If you accidentally reject, just run the command again and click "Allow"
+
+**Example:**
+```
+You: /import-project
+Claude: Runs `gh project list --owner SiThuTun-mdy --format json`
+Permission prompt: "Allow this command?" → Click "Allow"
+```
+
+> **Tip:** If you keep rejecting prompts, commands will never complete. Always approve `gh` and `git` commands when working with GitHub projects.
+
+---
+
 ### Supabase connection errors
 
 1. Check `.env.local` has correct values

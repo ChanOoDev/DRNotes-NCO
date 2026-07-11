@@ -15,9 +15,15 @@ Find the next Pending task. If Sprint-Backlog doesn't exist, read tasks from Git
 
 **If `$ARGUMENTS` contains a number** (e.g., `/next-task 16`), treat it as a GitHub issue ID and skip to Step 1B below.
 
-## Mandatory Workflow (12 Steps)
+## Mandatory Workflow (13 Steps)
 
 **Complete ALL steps in order. Do NOT skip any step.**
+**Two mandatory approval gates: Step 5 (Code Review) and Step 9 (Pre-PR).**
+
+### Workflow Flow
+```
+Implement → Code Review (reviewer agent) → WAIT → QA (qa agent) → WAIT → PR
+```
 
 ### Step 1A: Auto-pick Next Task (when no task ID provided)
 
@@ -131,12 +137,46 @@ git checkout -b feat/<scope>-<short-description>
 - Handle errors properly with try/catch
 - Validate all inputs with Zod
 
-### Step 5: Developer Self-Review
-Review your own code for:
-- [ ] **Security** — auth checks, input sanitization, no secrets exposed, RLS enforced
-- [ ] **Error handling** — try/catch, structured responses, no raw error dumps
-- [ ] **Input validation** — Zod schemas, server-side validation
-- [ ] **Code quality** — TypeScript strict, no `any`, proper typing
+### Step 5: Code Review with Reviewer Agent (MANDATORY — DO NOT SKIP)
+
+**Spawn the `reviewer` agent to perform code review:**
+
+```bash
+# Agent will review all changed files for:
+# - Architecture consistency
+# - Security vulnerabilities
+# - Type safety
+# - Error handling
+# - Performance issues
+# - Maintainability
+```
+
+The reviewer agent will return:
+- Findings grouped by severity (Critical, High, Medium, Low)
+- Verdict: PASS or FAIL
+
+**If FAIL (Critical/High findings):**
+1. Fix the issues identified
+2. Re-run the review
+3. Repeat until PASS
+
+**Present review results to user:**
+```
+## Code Review Results
+
+| Severity | Count |
+|----------|-------|
+| Critical | X |
+| High | X |
+| Medium | X |
+| Low | X |
+
+Verdict: PASS/FAIL
+
+Proceed to QA? (y/n)
+```
+
+**WAIT FOR USER APPROVAL before proceeding.**
 
 ### Step 6: Commit and Push
 ```
@@ -144,25 +184,64 @@ git add -A && git commit -m "feat(<scope>): <description>"
 git push origin feat/<scope>-<short-description>
 ```
 
-### Step 7: QA Checks
-Run ALL of these and fix any failures:
-```bash
-npm run lint          # ESLint
-npx tsc --noEmit      # TypeScript
-npm run build         # Build verification
+### Step 7: QA with QA Agent (MANDATORY — DO NOT SKIP)
+
+**Spawn the `qa` agent to perform quality assurance:**
+
+The QA agent will:
+1. Run automated checks (ESLint, TypeScript, Build)
+2. **Create unit tests** for all implemented functions/components
+3. Validate acceptance criteria from the issue
+4. Test the implementation against requirements
+5. Generate test results and bug reports
+
+**QA Agent validates:**
+- [ ] ESLint passes (`npm run lint`)
+- [ ] TypeScript compiles (`npx tsc --noEmit`)
+- [ ] Build succeeds (`npm run build`)
+- [ ] Unit tests created and passing
+- [ ] Acceptance criteria met
+- [ ] No Critical/High bugs
+
+The QA agent will return:
+- Test results (passed/failed/skipped)
+- **Unit test coverage report**
+- Acceptance criteria status
+- Bug list (if any)
+- Ready for release: true/false
+
+### Step 8: Fix Issues (if needed)
+If the QA agent found Critical/High bugs:
+1. Fix the issues identified
+2. Re-run QA agent
+3. Repeat until no Critical/High bugs remain
+
+### Step 9: Pre-PR Review Gate (MANDATORY — DO NOT SKIP)
+
+**Present QA results and request user approval before creating PR:**
+
 ```
-If `scripts/safe-code-check.sh` exists, also run:
-```bash
-bash scripts/safe-code-check.sh  # Security scan
+## QA Results
+
+| Check | Status |
+|-------|--------|
+| ESLint | ✅/❌ |
+| TypeScript | ✅/❌ |
+| Build | ✅/❌ |
+| Acceptance Criteria | X/Y met |
+
+### Bugs Found
+- Critical: X
+- High: X
+- Medium: X
+- Low: X
+
+Ready to create PR? (y/n)
 ```
 
-### Step 8: Fix Issues
-If Step 7 found problems:
-1. Fix the issues
-2. Re-run the failed checks
-3. Repeat until all checks pass
+**WAIT FOR USER APPROVAL before creating PR.**
 
-### Step 9: Create Pull Request
+### Step 10: Create Pull Request
 
 Create PR using `.github/PULL_REQUEST_TEMPLATE.md`:
 ```bash
@@ -171,18 +250,18 @@ gh pr create --title "<title>" --body "<filled PR template>"
 - Link to issue: `Closes #<issue-number>` (if applicable)
 - Pre-check items verified in Step 7 should be checked in the template
 
-### Step 10: Update Project Board (if issues exist)
+### Step 11: Update Project Board (if issues exist)
 Set issue to Done using the PROJECT_ID, FIELD_ID, and DONE_ID discovered in Step 1A:
 ```
 gh project item-edit --project-id <PROJECT_ID> --id <ITEM_ID> --field-id <FIELD_ID> --single-select-option-id <DONE_ID>
 ```
 
-### Step 11: Update docs/Progress.md
+### Step 12: Update docs/Progress.md
 - Mark the completed user story
 - Update current phase if needed
 - Add any new decisions to `docs/10-Decisions.md`
 
-### Step 12: Report
+### Step 13: Report
 Tell the user:
 - What was completed
 - What is next
@@ -190,5 +269,7 @@ Tell the user:
 ## Rules
 - Do not start more than one task
 - Do not skip any step
+- **Do not proceed past Step 5 without user approval**
+- **Do not proceed past Step 9 without user approval**
 - Do not commit code that fails QA checks
-- Do not create PR without self-review
+- Do not create PR without explicit user approval

@@ -4,7 +4,7 @@ You are working inside an AI-driven SDLC project.
 
 ## GitHub Project
 
-- **Repository:** https://github.com/ChanOoDev/drnotes
+- **Repository:** https://github.com/ChanOoDev/DRNotes-NCO
 - **Project Board:** https://github.com/SiThuTun-mdy/Dr-Note/projects/3
 - **Project ID:** PVT_kwHOAOdsvc4BdB7j
 
