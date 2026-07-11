@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
@@ -52,7 +53,18 @@ export default async function DashboardLayout({
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-semibold">Dr.Note</h1>
+          <div className="flex items-center gap-6">
+            <Link href={allowedPrefix} className="text-xl font-semibold hover:text-primary">
+              Dr.Note
+            </Link>
+            <nav className="flex items-center gap-4 text-sm">
+              {roleName === "admin" && (
+                <Link href="/admin/users" className="text-gray-600 hover:text-primary">
+                  User Management
+                </Link>
+              )}
+            </nav>
+          </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600">
               {profile?.name || user.email}
