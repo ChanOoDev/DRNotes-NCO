@@ -1,8 +1,7 @@
--- Dr.Note Database Schema
--- Based on docs/guide/01-database-schema.md (ERD v2)
-
--- Enable UUID extension
-create extension if not exists "uuid-ossp";
+-- ============================================================================
+-- Dr.Note — Initial Schema Migration (ERD v0.1)
+-- Source of truth: docs/guide/01-database-schema.md
+-- ============================================================================
 
 -- ============================================
 -- Identity & Access (Blue Zone)
@@ -90,7 +89,7 @@ create table visits (
   created_at timestamptz not null default now()
 );
 
--- Screenings (nurse vitals, exactly one per visit)
+-- Screenings (nurse vitals, exactly one per visit — D3)
 create table screenings (
   id uuid primary key default gen_random_uuid(),
   visit_id uuid not null unique references visits(id) on delete cascade,
@@ -98,7 +97,8 @@ create table screenings (
   weight_kg numeric,
   bmi numeric generated always as (
     case
-      when height_cm > 0 then weight_kg / power(height_cm / 100, 2)
+      when height_cm is not null and height_cm > 0
+      then weight_kg / power(height_cm / 100.0, 2)
       else null
     end
   ) stored,
@@ -201,7 +201,7 @@ create policy users_select on users for select
   using (has_permission('users.manage') or id = auth.uid());
 
 create policy users_insert on users for insert
-  with check (has_permission('users.manage') or id = auth.uid());
+  with check (has_permission('users.manage'));
 
 create policy users_update on users for update
   using (has_permission('users.manage') or id = auth.uid());
@@ -250,7 +250,7 @@ create policy prescriptions_insert on prescriptions for insert
 -- Prescription items policies
 create policy prescription_items_select on prescription_items for select
   using (has_permission('prescriptions.create') or exists (
-    select 1 prescriptions p
+    select 1 from prescriptions p
     join visits v on v.id = p.visit_id
     where p.id = prescription_items.prescription_id and v.patient_id = auth.uid()
   ));
@@ -266,3 +266,64 @@ create policy attachments_select on attachments for select
 
 create policy attachments_insert on attachments for insert
   with check (has_permission('visits.create'));
+
+-- Staff profiles policies
+create policy staff_profiles_select on staff_profiles for select
+  using (true);  -- staff profiles visible to all authenticated users
+
+create policy staff_profiles_insert on staff_profiles for insert
+  with check (has_permission('users.manage'));
+
+create policy staff_profiles_update on staff_profiles for update
+  using (user_id = auth.uid() or has_permission('users.manage'));
+
+-- Patient profiles policies
+create policy patient_profiles_select on patient_profiles for select
+  using (has_permission('patients.read') or user_id = auth.uid());
+
+create policy patient_profiles_insert on patient_profiles for insert
+  with check (has_permission('patients.create'));
+
+create policy patient_profiles_update on patient_profiles for update
+  using (has_permission('patients.update') or user_id = auth.uid());
+
+-- Emergency contacts policies
+create policy emergency_contacts_select on emergency_contacts for select
+  using (has_permission('patients.read') or patient_id = auth.uid());
+
+create policy emergency_contacts_insert on emergency_contacts for insert
+  with check (has_permission('patients.create'));
+
+create policy emergency_contacts_update on emergency_contacts for update
+  using (has_permission('patients.update') or patient_id = auth.uid());
+
+create policy emergency_contacts_delete on emergency_contacts for delete
+  using (has_permission('patients.update') or patient_id = auth.uid());
+
+-- Roles policies (read-only for most)
+create policy roles_select on roles for select
+  using (true);
+
+-- Permissions policies (read-only for most)
+create policy permissions_select on permissions for select
+  using (true);
+
+-- User roles policies
+create policy user_roles_select on user_roles for select
+  using (true);
+
+create policy user_roles_insert on user_roles for insert
+  with check (has_permission('users.manage'));
+
+create policy user_roles_delete on user_roles for delete
+  using (has_permission('users.manage'));
+
+-- Role permissions policies
+create policy role_permissions_select on role_permissions for select
+  using (true);
+
+create policy role_permissions_insert on role_permissions for insert
+  with check (has_permission('users.manage'));
+
+create policy role_permissions_delete on role_permissions for delete
+  using (has_permission('users.manage'));
