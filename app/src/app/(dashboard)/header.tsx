@@ -1,8 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Activity, LogOut, ChevronDown } from "lucide-react"
 import { logout } from "../(auth)/login/actions"
 
 interface DashboardHeaderProps {
@@ -11,32 +10,74 @@ interface DashboardHeaderProps {
   dashboardUrl: string
 }
 
+const roleColors: Record<string, string> = {
+  admin: "bg-red-500",
+  doctor: "bg-blue-500",
+  nurse: "bg-green-500",
+  receptionist: "bg-purple-500",
+  patient: "bg-gray-500",
+}
+
+const roleInitials: Record<string, string> = {
+  admin: "AD",
+  doctor: "DR",
+  nurse: "NU",
+  receptionist: "RE",
+  patient: "PA",
+}
+
 export default function DashboardHeader({
   userName,
   roleName,
   dashboardUrl,
 }: DashboardHeaderProps) {
   return (
-    <header className="bg-white shadow-sm border-b">
-      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Link href={dashboardUrl} className="text-xl font-semibold hover:text-primary">
-            Dr.Note
+    <header className="bg-white border-b border-border/50 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        {/* Left: Logo + Nav */}
+        <div className="flex items-center gap-8">
+          <Link href={dashboardUrl} className="flex items-center gap-2.5 group">
+            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center group-hover:bg-primary/90 transition-colors">
+              <Activity className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <span className="text-lg font-bold text-foreground tracking-tight">Dr.Note</span>
           </Link>
-          <nav className="flex items-center gap-4 text-sm">
+
+          <nav className="hidden md:flex items-center gap-1">
             {roleName === "admin" && (
-              <Link href="/admin/users" className="text-gray-600 hover:text-primary">
+              <Link
+                href="/admin/users"
+                className="px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              >
                 User Management
               </Link>
             )}
           </nav>
         </div>
+
+        {/* Right: User menu */}
         <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600">{userName}</span>
-          <Badge>{roleName}</Badge>
-          <Button variant="outline" size="sm" onClick={() => logout()}>
-            Sign Out
-          </Button>
+          <div className="flex items-center gap-3 pl-4 border-l border-border/50">
+            <div className="flex items-center gap-3">
+              <div className={`h-8 w-8 rounded-full ${roleColors[roleName] || 'bg-gray-500'} flex items-center justify-center`}>
+                <span className="text-xs font-semibold text-white">
+                  {roleInitials[roleName] || roleName.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <div className="hidden sm:block">
+                <p className="text-sm font-medium text-foreground leading-none">{userName}</p>
+                <p className="text-xs text-muted-foreground mt-0.5 capitalize">{roleName}</p>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={() => logout()}
+            className="h-9 px-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-2"
+          >
+            <LogOut className="h-4 w-4" />
+            <span className="hidden sm:inline">Sign Out</span>
+          </button>
         </div>
       </div>
     </header>
