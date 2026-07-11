@@ -1,6 +1,6 @@
-import Link from "next/link"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function AdminPage() {
   return (
@@ -45,11 +45,6 @@ export default function AdminPage() {
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <Link href="/admin/users">
-            <Button className="w-full justify-start">
-              User Management
-            </Button>
-          </Link>
           <p className="text-sm text-gray-500">More features coming soon:</p>
           <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
             <li>System settings</li>
@@ -58,5 +53,5 @@ export default function AdminPage() {
         </CardContent>
       </Card>
     </>
-  )
+  );
 }
