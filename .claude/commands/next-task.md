@@ -18,7 +18,12 @@ Find the next Pending task. If Sprint-Backlog doesn't exist, read tasks from Git
 ## Mandatory Workflow (13 Steps)
 
 **Complete ALL steps in order. Do NOT skip any step.**
-**Two mandatory approval gates: Step 5 (Self-Review) and Step 9 (Pre-PR).**
+**Two mandatory approval gates: Step 5 (Code Review) and Step 9 (Pre-PR).**
+
+### Workflow Flow
+```
+Implement → Code Review (reviewer agent) → WAIT → QA (qa agent) → WAIT → PR
+```
 
 ### Step 1A: Auto-pick Next Task (when no task ID provided)
 
@@ -132,42 +137,43 @@ git checkout -b feat/<scope>-<short-description>
 - Handle errors properly with try/catch
 - Validate all inputs with Zod
 
-### Step 5: Developer Self-Review (MANDATORY — DO NOT SKIP)
+### Step 5: Code Review with Reviewer Agent (MANDATORY — DO NOT SKIP)
 
-**Review your own code OUT LOUD before proceeding.** Walk through each item:
+**Spawn the `reviewer` agent to perform code review:**
 
-#### Security Checklist
-- [ ] No hardcoded secrets or API keys
-- [ ] Auth checks present (RLS, middleware, server-side)
-- [ ] Input sanitization (Zod validation)
-- [ ] No sensitive data exposed in client bundles
-
-#### Code Quality Checklist
-- [ ] Error handling with try/catch
-- [ ] TypeScript strict mode, no `any` types
-- [ ] Proper typing for all functions
-- [ ] No console.log or debug statements
-
-#### Architecture Checklist
-- [ ] Follows 02-architecture.md patterns
-- [ ] Server Actions for mutations (not API routes)
-- [ ] Client components only when needed
-- [ ] Proper file placement per §5
-
-**Present findings to user:**
+```bash
+# Agent will review all changed files for:
+# - Architecture consistency
+# - Security vulnerabilities
+# - Type safety
+# - Error handling
+# - Performance issues
+# - Maintainability
 ```
-## Self-Review Complete
 
-### Security
-- [x/ ] All checks passed
+The reviewer agent will return:
+- Findings grouped by severity (Critical, High, Medium, Low)
+- Verdict: PASS or FAIL
 
-### Code Quality  
-- [x/ ] All checks passed
+**If FAIL (Critical/High findings):**
+1. Fix the issues identified
+2. Re-run the review
+3. Repeat until PASS
 
-### Architecture
-- [x/ ] Follows patterns
+**Present review results to user:**
+```
+## Code Review Results
 
-Proceed to QA checks? (y/n)
+| Severity | Count |
+|----------|-------|
+| Critical | X |
+| High | X |
+| Medium | X |
+| Low | X |
+
+Verdict: PASS/FAIL
+
+Proceed to QA? (y/n)
 ```
 
 **WAIT FOR USER APPROVAL before proceeding.**
@@ -178,23 +184,34 @@ git add -A && git commit -m "feat(<scope>): <description>"
 git push origin feat/<scope>-<short-description>
 ```
 
-### Step 7: QA Checks
-Run ALL of these and fix any failures:
-```bash
-npm run lint          # ESLint
-npx tsc --noEmit      # TypeScript
-npm run build         # Build verification
-```
-If `scripts/safe-code-check.sh` exists, also run:
-```bash
-bash scripts/safe-code-check.sh  # Security scan
-```
+### Step 7: QA with QA Agent (MANDATORY — DO NOT SKIP)
 
-### Step 8: Fix Issues
-If Step 7 found problems:
-1. Fix the issues
-2. Re-run the failed checks
-3. Repeat until all checks pass
+**Spawn the `qa` agent to perform quality assurance:**
+
+The QA agent will:
+1. Run automated checks (ESLint, TypeScript, Build)
+2. Validate acceptance criteria from the issue
+3. Test the implementation against requirements
+4. Generate test results and bug reports
+
+**QA Agent validates:**
+- [ ] ESLint passes (`npm run lint`)
+- [ ] TypeScript compiles (`npx tsc --noEmit`)
+- [ ] Build succeeds (`npm run build`)
+- [ ] Acceptance criteria met
+- [ ] No Critical/High bugs
+
+The QA agent will return:
+- Test results (passed/failed/skipped)
+- Acceptance criteria status
+- Bug list (if any)
+- Ready for release: true/false
+
+### Step 8: Fix Issues (if needed)
+If the QA agent found Critical/High bugs:
+1. Fix the issues identified
+2. Re-run QA agent
+3. Repeat until no Critical/High bugs remain
 
 ### Step 9: Pre-PR Review Gate (MANDATORY — DO NOT SKIP)
 
@@ -208,10 +225,13 @@ If Step 7 found problems:
 | ESLint | ✅/❌ |
 | TypeScript | ✅/❌ |
 | Build | ✅/❌ |
+| Acceptance Criteria | X/Y met |
 
-### Summary
-- Files changed: X
-- Issues found and fixed: X
+### Bugs Found
+- Critical: X
+- High: X
+- Medium: X
+- Low: X
 
 Ready to create PR? (y/n)
 ```
