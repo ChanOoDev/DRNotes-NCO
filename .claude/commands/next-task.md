@@ -15,9 +15,10 @@ Find the next Pending task. If Sprint-Backlog doesn't exist, read tasks from Git
 
 **If `$ARGUMENTS` contains a number** (e.g., `/next-task 16`), treat it as a GitHub issue ID and skip to Step 1B below.
 
-## Mandatory Workflow (12 Steps)
+## Mandatory Workflow (13 Steps)
 
 **Complete ALL steps in order. Do NOT skip any step.**
+**Two mandatory approval gates: Step 5 (Self-Review) and Step 9 (Pre-PR).**
 
 ### Step 1A: Auto-pick Next Task (when no task ID provided)
 
@@ -131,12 +132,45 @@ git checkout -b feat/<scope>-<short-description>
 - Handle errors properly with try/catch
 - Validate all inputs with Zod
 
-### Step 5: Developer Self-Review
-Review your own code for:
-- [ ] **Security** — auth checks, input sanitization, no secrets exposed, RLS enforced
-- [ ] **Error handling** — try/catch, structured responses, no raw error dumps
-- [ ] **Input validation** — Zod schemas, server-side validation
-- [ ] **Code quality** — TypeScript strict, no `any`, proper typing
+### Step 5: Developer Self-Review (MANDATORY — DO NOT SKIP)
+
+**Review your own code OUT LOUD before proceeding.** Walk through each item:
+
+#### Security Checklist
+- [ ] No hardcoded secrets or API keys
+- [ ] Auth checks present (RLS, middleware, server-side)
+- [ ] Input sanitization (Zod validation)
+- [ ] No sensitive data exposed in client bundles
+
+#### Code Quality Checklist
+- [ ] Error handling with try/catch
+- [ ] TypeScript strict mode, no `any` types
+- [ ] Proper typing for all functions
+- [ ] No console.log or debug statements
+
+#### Architecture Checklist
+- [ ] Follows 02-architecture.md patterns
+- [ ] Server Actions for mutations (not API routes)
+- [ ] Client components only when needed
+- [ ] Proper file placement per §5
+
+**Present findings to user:**
+```
+## Self-Review Complete
+
+### Security
+- [x/ ] All checks passed
+
+### Code Quality  
+- [x/ ] All checks passed
+
+### Architecture
+- [x/ ] Follows patterns
+
+Proceed to QA checks? (y/n)
+```
+
+**WAIT FOR USER APPROVAL before proceeding.**
 
 ### Step 6: Commit and Push
 ```
@@ -162,7 +196,29 @@ If Step 7 found problems:
 2. Re-run the failed checks
 3. Repeat until all checks pass
 
-### Step 9: Create Pull Request
+### Step 9: Pre-PR Review Gate (MANDATORY — DO NOT SKIP)
+
+**Present QA results and request user approval before creating PR:**
+
+```
+## QA Results
+
+| Check | Status |
+|-------|--------|
+| ESLint | ✅/❌ |
+| TypeScript | ✅/❌ |
+| Build | ✅/❌ |
+
+### Summary
+- Files changed: X
+- Issues found and fixed: X
+
+Ready to create PR? (y/n)
+```
+
+**WAIT FOR USER APPROVAL before creating PR.**
+
+### Step 10: Create Pull Request
 
 Create PR using `.github/PULL_REQUEST_TEMPLATE.md`:
 ```bash
@@ -171,18 +227,18 @@ gh pr create --title "<title>" --body "<filled PR template>"
 - Link to issue: `Closes #<issue-number>` (if applicable)
 - Pre-check items verified in Step 7 should be checked in the template
 
-### Step 10: Update Project Board (if issues exist)
+### Step 11: Update Project Board (if issues exist)
 Set issue to Done using the PROJECT_ID, FIELD_ID, and DONE_ID discovered in Step 1A:
 ```
 gh project item-edit --project-id <PROJECT_ID> --id <ITEM_ID> --field-id <FIELD_ID> --single-select-option-id <DONE_ID>
 ```
 
-### Step 11: Update docs/Progress.md
+### Step 12: Update docs/Progress.md
 - Mark the completed user story
 - Update current phase if needed
 - Add any new decisions to `docs/10-Decisions.md`
 
-### Step 12: Report
+### Step 13: Report
 Tell the user:
 - What was completed
 - What is next
@@ -190,5 +246,7 @@ Tell the user:
 ## Rules
 - Do not start more than one task
 - Do not skip any step
+- **Do not proceed past Step 5 without user approval**
+- **Do not proceed past Step 9 without user approval**
 - Do not commit code that fails QA checks
-- Do not create PR without self-review
+- Do not create PR without explicit user approval
