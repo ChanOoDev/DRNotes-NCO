@@ -66,7 +66,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   // For authenticated users, fetch role once and reuse
-  if (user && !isPublicPath) {
+  if (user) {
     const { data: roles } = await supabase
       .from('user_roles')
       .select('roles(name)')
@@ -83,8 +83,8 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(url)
     }
 
-    // Role-based route protection
-    if (roleName) {
+    // Role-based route protection for protected routes
+    if (!isPublicPath && roleName) {
       const allowedPrefixes = roleRoutes[roleName] || []
       const isAllowed = allowedPrefixes.some((prefix) => pathname.startsWith(prefix))
 
