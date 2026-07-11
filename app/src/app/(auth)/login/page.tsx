@@ -116,6 +116,16 @@ export default function LoginPage() {
               )}
             </Button>
           </form>
+
+          <div className="mt-6 border-t pt-4">
+            <p className="text-xs text-muted-foreground text-center mb-2">Dev Credentials (Password: Demo@1234)</p>
+            <div className="grid grid-cols-2 gap-1 text-xs text-muted-foreground">
+              <span>Admin</span><span>admin@drnote.com</span>
+              <span>Doctor</span><span>doctor@drnote.com</span>
+              <span>Nurse</span><span>nurse@drnote.com</span>
+              <span>Receptionist</span><span>receptionist@drnote.com</span>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
