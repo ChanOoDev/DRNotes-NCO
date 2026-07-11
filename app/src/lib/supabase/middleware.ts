@@ -35,6 +35,7 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // Redirect unauthenticated users to login
+  // Note: /auth path excluded for future OAuth callback support
   if (
     !user &&
     !request.nextUrl.pathname.startsWith('/login') &&

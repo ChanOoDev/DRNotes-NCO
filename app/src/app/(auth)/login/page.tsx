@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
+import { isRedirectError } from "next/dist/client/components/redirect-error"
 import { login } from "./actions"
 import { loginSchema, type LoginInput } from "@/lib/validators/auth"
 import { Button } from "@/components/ui/button"
@@ -42,7 +43,11 @@ export default function LoginPage() {
       if (result?.error) {
         setError(result.error)
       }
-    } catch {
+    } catch (err) {
+      // Re-throw redirect errors so Next.js handles them
+      if (isRedirectError(err)) {
+        throw err
+      }
       setError("Something went wrong. Please try again.")
     } finally {
       setIsLoading(false)
