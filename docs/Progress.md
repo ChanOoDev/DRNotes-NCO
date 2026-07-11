@@ -24,12 +24,13 @@
 | RBAC: roles/permissions tables wired + RLS policies | Done (#17) |
 | Supabase Auth: email/password login + logout + session | Done (#16) |
 | Protected routes + role-based navigation/middleware | Done (#18) |
+| Admin user management screen | Done (#19) |
 
 ### 🔄 In Progress
 
 | Task | Status |
 |------|--------|
-| Admin user management screen | Pending (#19) |
+| (none) | — |
 
 ### 📋 Backlog
 
