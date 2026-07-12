@@ -43,7 +43,7 @@ const roleBadgeColors: Record<string, string> = {
   doctor: "bg-blue-100 text-blue-800",
   nurse: "bg-green-100 text-green-800",
   receptionist: "bg-purple-100 text-purple-800",
-  patient: "bg-gray-100 text-gray-800",
+  patient: "bg-muted text-muted-foreground",
 }
 
 export default function AdminUsersPage() {
@@ -139,16 +139,16 @@ export default function AdminUsersPage() {
 
   return (
     <>
-      <h2 className="text-2xl font-bold mb-6">User Management</h2>
+      <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">User Management</h2>
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-medium text-gray-500">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               {filtered.length} user{filtered.length !== 1 ? "s" : ""}
             </CardTitle>
-            <div className="relative w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search by name or email..."
                 value={search}
@@ -160,111 +160,204 @@ export default function AdminUsersPage() {
         </CardHeader>
         <CardContent>
           {filtered.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-muted-foreground">
               <p className="text-sm">No users found.</p>
             </div>
           ) : (
-            <div className="border rounded-lg">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-muted/50 border-b">
-                    <th className="text-left px-4 py-3 font-medium text-muted-foreground">Name</th>
-                    <th className="text-left px-4 py-3 font-medium text-muted-foreground">Email</th>
-                    <th className="text-left px-4 py-3 font-medium text-muted-foreground">Roles</th>
-                    <th className="text-left px-4 py-3 font-medium text-muted-foreground">Active</th>
-                    <th className="text-right px-4 py-3 font-medium text-muted-foreground w-12"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((user) => (
-                    <tr key={user.id} className="border-b last:border-0">
-                      <td className="px-4 py-3 font-medium">{user.name}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{user.email}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex flex-wrap gap-1">
-                          {user.roles.map((role) => (
-                            <Badge
-                              key={role.id}
-                              className={`${roleBadgeColors[role.name] || "bg-gray-100 text-gray-800"} text-xs`}
-                            >
-                              {role.name}
-                              <button
-                                onClick={() => handleRemoveRole(user.id, role.id)}
-                                className="ml-1 hover:text-red-600"
-                                aria-label={`Remove ${role.name} role`}
+            <>
+              {/* Desktop table */}
+              <div className="hidden md:block border rounded-lg">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-muted/50 border-b">
+                      <th className="text-left px-4 py-3 font-medium text-muted-foreground">Name</th>
+                      <th className="text-left px-4 py-3 font-medium text-muted-foreground">Email</th>
+                      <th className="text-left px-4 py-3 font-medium text-muted-foreground">Roles</th>
+                      <th className="text-left px-4 py-3 font-medium text-muted-foreground">Active</th>
+                      <th className="text-right px-4 py-3 font-medium text-muted-foreground w-12"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map((user) => (
+                      <tr key={user.id} className="border-b last:border-0">
+                        <td className="px-4 py-3 font-medium">{user.name}</td>
+                        <td className="px-4 py-3 text-muted-foreground">{user.email}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex flex-wrap gap-1">
+                            {user.roles.map((role) => (
+                              <Badge
+                                key={role.id}
+                                className={`${roleBadgeColors[role.name] || "bg-muted text-muted-foreground"} text-xs`}
                               >
-                                ×
-                              </button>
-                            </Badge>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <Switch
-                            checked={user.is_active}
-                            onCheckedChange={(checked) =>
-                              setConfirmDialog({
-                                open: true,
-                                userId: user.id,
-                                userName: user.name,
-                                isActive: !checked,
-                              })
-                            }
-                            aria-label={`Toggle ${user.name} active status`}
-                          />
-                          <span className="text-xs text-muted-foreground">
-                            {user.is_active ? "Active" : "Inactive"}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted cursor-pointer">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {getAvailableRoles(user.id).length > 0 && (
-                              <DropdownMenuSub>
-                                <DropdownMenuSubTrigger>
-                                  <UserPlus className="mr-2 h-4 w-4" />
-                                  Assign role
-                                </DropdownMenuSubTrigger>
-                                <DropdownMenuSubContent>
-                                  {getAvailableRoles(user.id).map((role) => (
+                                {role.name}
+                                <button
+                                  onClick={() => handleRemoveRole(user.id, role.id)}
+                                  className="ml-1 hover:text-red-600"
+                                  aria-label={`Remove ${role.name} role`}
+                                >
+                                  ×
+                                </button>
+                              </Badge>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <Switch
+                              checked={user.is_active}
+                              onCheckedChange={(checked) =>
+                                setConfirmDialog({
+                                  open: true,
+                                  userId: user.id,
+                                  userName: user.name,
+                                  isActive: !checked,
+                                })
+                              }
+                              aria-label={`Toggle ${user.name} active status`}
+                            />
+                            <span className="text-xs text-muted-foreground">
+                              {user.is_active ? "Active" : "Inactive"}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted cursor-pointer">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              {getAvailableRoles(user.id).length > 0 && (
+                                <DropdownMenuSub>
+                                  <DropdownMenuSubTrigger>
+                                    <UserPlus className="mr-2 h-4 w-4" />
+                                    Assign role
+                                  </DropdownMenuSubTrigger>
+                                  <DropdownMenuSubContent>
+                                    {getAvailableRoles(user.id).map((role) => (
+                                      <DropdownMenuItem
+                                        key={role.id}
+                                        onClick={() => handleAssignRole(user.id, role.id)}
+                                      >
+                                        {role.name}
+                                      </DropdownMenuItem>
+                                    ))}
+                                  </DropdownMenuSubContent>
+                                </DropdownMenuSub>
+                              )}
+                              {user.roles.length > 0 && (
+                                <>
+                                  <DropdownMenuSeparator />
+                                  {user.roles.map((role) => (
                                     <DropdownMenuItem
                                       key={role.id}
-                                      onClick={() => handleAssignRole(user.id, role.id)}
+                                      onClick={() => handleRemoveRole(user.id, role.id)}
+                                      className="text-red-600"
                                     >
-                                      {role.name}
+                                      <UserMinus className="mr-2 h-4 w-4" />
+                                      Remove {role.name}
                                     </DropdownMenuItem>
                                   ))}
-                                </DropdownMenuSubContent>
-                              </DropdownMenuSub>
-                            )}
-                            {user.roles.length > 0 && (
-                              <>
-                                <DropdownMenuSeparator />
-                                {user.roles.map((role) => (
+                                </>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile card layout */}
+              <div className="md:hidden space-y-3">
+                {filtered.map((user) => (
+                  <div key={user.id} className="border rounded-lg p-4 space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium truncate">{user.name}</p>
+                        <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted cursor-pointer shrink-0">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          {getAvailableRoles(user.id).length > 0 && (
+                            <DropdownMenuSub>
+                              <DropdownMenuSubTrigger>
+                                <UserPlus className="mr-2 h-4 w-4" />
+                                Assign role
+                              </DropdownMenuSubTrigger>
+                              <DropdownMenuSubContent>
+                                {getAvailableRoles(user.id).map((role) => (
                                   <DropdownMenuItem
                                     key={role.id}
-                                    onClick={() => handleRemoveRole(user.id, role.id)}
-                                    className="text-red-600"
+                                    onClick={() => handleAssignRole(user.id, role.id)}
                                   >
-                                    <UserMinus className="mr-2 h-4 w-4" />
-                                    Remove {role.name}
+                                    {role.name}
                                   </DropdownMenuItem>
                                 ))}
-                              </>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                              </DropdownMenuSubContent>
+                            </DropdownMenuSub>
+                          )}
+                          {user.roles.length > 0 && (
+                            <>
+                              <DropdownMenuSeparator />
+                              {user.roles.map((role) => (
+                                <DropdownMenuItem
+                                  key={role.id}
+                                  onClick={() => handleRemoveRole(user.id, role.id)}
+                                  className="text-red-600"
+                                >
+                                  <UserMinus className="mr-2 h-4 w-4" />
+                                  Remove {role.name}
+                                </DropdownMenuItem>
+                              ))}
+                            </>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-wrap gap-1">
+                        {user.roles.map((role) => (
+                          <Badge
+                            key={role.id}
+                            className={`${roleBadgeColors[role.name] || "bg-muted text-muted-foreground"} text-xs`}
+                          >
+                            {role.name}
+                            <button
+                              onClick={() => handleRemoveRole(user.id, role.id)}
+                              className="ml-1 hover:text-red-600"
+                              aria-label={`Remove ${role.name} role`}
+                            >
+                              ×
+                            </button>
+                          </Badge>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Switch
+                          checked={user.is_active}
+                          onCheckedChange={(checked) =>
+                            setConfirmDialog({
+                              open: true,
+                              userId: user.id,
+                              userName: user.name,
+                              isActive: !checked,
+                            })
+                          }
+                          aria-label={`Toggle ${user.name} active status`}
+                        />
+                        <span className="text-xs text-muted-foreground">
+                          {user.is_active ? "Active" : "Inactive"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
