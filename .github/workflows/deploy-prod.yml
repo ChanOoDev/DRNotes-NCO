@@ -41,4 +41,5 @@ jobs:
         run: vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
 
       - name: Notify
-        run: echo "Production deployment complete!"
+        run: |
+          echo "Production deployment complete!"
