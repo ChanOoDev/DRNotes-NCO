@@ -34,7 +34,7 @@ Go to **Settings → Secrets and variables → Actions** and add:
 ### Vercel Project Setup
 
 1. Create project at https://vercel.com/new
-2. Import GitHub repo `ChanOoDev/DRNotes-NCO`
+2. Import your GitHub repo
 3. Set **Root Directory** to `app`
 4. Add environment variables for **Production** and **Preview**:
    - `NEXT_PUBLIC_SUPABASE_URL`
