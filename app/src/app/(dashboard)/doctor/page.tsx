@@ -8,7 +8,7 @@ export default function DoctorPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium text-gray-500">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Today&apos;s Patients
             </CardTitle>
           </CardHeader>
@@ -18,7 +18,7 @@ export default function DoctorPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium text-gray-500">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Pending Consultations
             </CardTitle>
           </CardHeader>
@@ -28,7 +28,7 @@ export default function DoctorPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium text-gray-500">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Completed Today
             </CardTitle>
           </CardHeader>
@@ -43,8 +43,8 @@ export default function DoctorPage() {
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          <p className="text-sm text-gray-500">Clinical features coming soon:</p>
-          <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+          <p className="text-sm text-muted-foreground">Clinical features coming soon:</p>
+          <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
             <li>View patient queue</li>
             <li>Consultation notes</li>
             <li>Diagnosis entry</li>

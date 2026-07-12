@@ -1,8 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { logout } from "../(auth)/login/actions"
+import DashboardHeader from "./header"
+import Sidebar from "@/components/features/shared/sidebar"
 
 const roleDashboard: Record<string, string> = {
   admin: "/admin",
@@ -40,7 +39,8 @@ export default async function DashboardLayout({
     .limit(1)
 
   const roleName =
-    (roles?.[0] as unknown as { roles: { name: string } | null })?.roles?.name || "unknown"
+    (roles?.[0] as unknown as { roles: { name: string } | null })?.roles?.name ||
+    "unknown"
 
   // Double-check role access (defense in depth — middleware also guards)
   const allowedPrefix = roleDashboard[roleName]
@@ -49,24 +49,18 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-semibold">Dr.Note</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">
-              {profile?.name || user.email}
-            </span>
-            <Badge>{roleName}</Badge>
-            <form action={logout}>
-              <Button variant="outline" size="sm">
-                Sign Out
-              </Button>
-            </form>
-          </div>
-        </div>
-      </header>
-      <main className="max-w-7xl mx-auto px-4 py-8">{children}</main>
+    <div className="flex min-h-screen bg-background">
+      <Sidebar roleName={roleName} dashboardUrl={allowedPrefix} />
+      <div className="flex-1 flex flex-col min-w-0">
+        <DashboardHeader
+          userName={profile?.name || user.email || ""}
+          roleName={roleName}
+          dashboardUrl={allowedPrefix}
+        />
+        <main className="flex-1 max-w-6xl w-full mx-auto px-4 md:px-6 py-6 md:py-8 pb-20 md:pb-8">
+          {children}
+        </main>
+      </div>
     </div>
   )
 }
