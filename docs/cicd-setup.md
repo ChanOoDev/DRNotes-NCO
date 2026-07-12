@@ -4,18 +4,12 @@
 
 ```mermaid
 graph LR
-    DEV[Developer] -->|Push Code| GH[GitHub]
-    GH -->|PR Created| CI[CI Pipeline]
-    CI -->|Checks Pass| MERGE[Merge to Main]
-    MERGE -->|Auto| UAT[UAT/Preview]
-    UAT -->|Manual Approval| PROD[Production]
-
-    style DEV fill:#e3f2fd
-    style GH fill:#f3e5f5
-    style CI fill:#e8f5e9
-    style MERGE fill:#fff3e0
-    style UAT fill:#e0f7fa
-    style PROD fill:#fce4ec
+    A[Push Code] --> B[PR Created]
+    B --> C[CI + Security]
+    C --> D[Merge to Main]
+    D --> E[Deploy UAT]
+    E --> F[Manual Approval]
+    F --> G[Deploy Production]
 ```
 
 ### Quick Summary
@@ -34,54 +28,25 @@ graph LR
 
 ## Detailed Pipeline
 
-DR Notes uses a **sequential deployment pipeline**:
-
 ```mermaid
 graph TD
     A[Feature Branch] -->|Create PR| B[Pull Request]
-    B --> C[CI Checks]
-    B --> D[Security Scans]
-
-    C --> C1[Type Check]
-    C --> C2[Lint]
-    C --> C3[Build]
-
-    D --> D1[Secret Scan]
-    D --> D2[Dependency Scan]
-    D --> D3[CodeQL]
-    D --> D4[License Scan]
-    D --> D5[Container Scan]
-
-    C1 & C2 & C3 --> E{All Checks Pass?}
-    D1 & D2 & D3 & D4 & D5 --> E
-
-    E -->|Yes| F[Code Review + Merge]
+    B --> C[CI: Type Check + Lint + Build]
+    B --> D[Security: Secrets + Dependencies + CodeQL]
+    C --> E{All Pass?}
+    D --> E
+    E -->|Yes| F[Merge to Main]
     E -->|No| G[Fix Issues]
-
-    F -->|Push to main| H[Deploy Pipeline]
-
-    H --> I[CI Tests]
-    H --> J[Security Scans]
-
-    I --> K{All Pass?}
-    J --> K
-
-    K -->|Yes| L[Deploy to UAT/Preview]
-    K -->|No| G
-
-    L --> M[Manual Approval Required]
-    M -->|Approve| N[Deploy to Production]
-    M -->|Reject| O[Investigate]
-
+    F --> H[CI Tests]
+    F --> I[Security Scans]
+    H --> J{All Pass?}
+    I --> J
+    J -->|Yes| K[Deploy UAT/Preview]
+    J -->|No| G
+    K --> L[Manual Approval]
+    L -->|Approve| M[Deploy Production]
+    L -->|Reject| N[Investigate]
     G -->|Fix + Push| B
-
-    style A fill:#e1f5fe
-    style B fill:#fff3e0
-    style L fill:#e8f5e9
-    style M fill:#fff9c4
-    style N fill:#c8e6c9
-    style G fill:#ffebee
-    style O fill:#ffebee
 ```
 
 ### Pipeline Flow Summary
