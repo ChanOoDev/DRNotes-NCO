@@ -47,4 +47,5 @@ jobs:
       - name: Output Deployment URL
         env:
           DEPLOY_URL: ${{ steps.deploy.outputs.url }}
-        run: echo "UAT Deployment: $DEPLOY_URL"
+        run: |
+          echo "UAT Deployment: $DEPLOY_URL"
