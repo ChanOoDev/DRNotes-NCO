@@ -132,7 +132,7 @@ jobs:
     defaults:
       run:
         working-directory: app
-    environment: uat
+    environment: preview
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -150,7 +150,7 @@ jobs:
       - name: Pull Vercel Environment
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: vercel pull --yes --environment=uat --token=$VERCEL_TOKEN
+        run: vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
 
       - name: Build
         env:
