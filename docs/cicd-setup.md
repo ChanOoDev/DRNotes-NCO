@@ -1,6 +1,38 @@
 # CI/CD Setup & Workflow Guide
 
-## Overview
+## High-Level Workflow
+
+```mermaid
+graph LR
+    DEV[Developer] -->|Push Code| GH[GitHub]
+    GH -->|PR Created| CI[CI Pipeline]
+    CI -->|Checks Pass| MERGE[Merge to Main]
+    MERGE -->|Auto| UAT[UAT/Preview]
+    UAT -->|Manual Approval| PROD[Production]
+
+    style DEV fill:#e3f2fd
+    style GH fill:#f3e5f5
+    style CI fill:#e8f5e9
+    style MERGE fill:#fff3e0
+    style UAT fill:#e0f7fa
+    style PROD fill:#fce4ec
+```
+
+### Quick Summary
+
+| Step | What Happens | Who |
+|------|--------------|-----|
+| 1. Push code | Create feature branch + PR | Developer |
+| 2. CI runs | Type check, lint, build, security scans | Automated |
+| 3. Code review | Review + approve PR | Team |
+| 4. Merge | PR merges to main | Developer |
+| 5. Deploy UAT | Auto-deploy to preview environment | Automated |
+| 6. Approve prod | Review UAT, approve production deploy | Developer/Lead |
+| 7. Deploy prod | Auto-deploy to production | Automated |
+
+---
+
+## Detailed Pipeline
 
 DR Notes uses a **sequential deployment pipeline**:
 
