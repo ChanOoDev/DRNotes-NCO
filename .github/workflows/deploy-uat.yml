@@ -19,24 +19,33 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: '24'
           cache: 'npm'
-          cache-dependency-path: app/package-lock.json
+          cache-dependency-path: 'app/package-lock.json'
 
       - name: Install Vercel CLI
         run: npm install -g vercel
 
       - name: Pull Vercel Environment
-        run: vercel pull --yes --environment=uat --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=uat --token=$VERCEL_TOKEN
 
       - name: Build
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --token=$VERCEL_TOKEN
 
       - name: Deploy to UAT
         id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          URL=$(vercel deploy --prebuilt --yes --token=${{ secrets.VERCEL_TOKEN }})
+          URL=$(vercel deploy --prebuilt --yes --token=$VERCEL_TOKEN)
           echo "url=$URL" >> $GITHUB_OUTPUT
 
       - name: Output Deployment URL
-        run: echo "🚀 UAT Deployment: ${{ steps.deploy.outputs.url }}"
+        env:
+          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          echo "UAT Deployment: $DEPLOY_URL"

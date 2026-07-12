@@ -1,0 +1,5 @@
+# Ensure LF line endings for shell scripts and YAML files
+*.yml text eol=lf
+*.yaml text eol=lf
+*.sh text eol=lf
+*.bash text eol=lf
