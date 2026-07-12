@@ -27,6 +27,11 @@ jobs:
         with:
           extra_args: --only-verified
 
+      - name: Scan for hardcoded secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   dependency-scan:
     runs-on: ubuntu-latest
     defaults:
