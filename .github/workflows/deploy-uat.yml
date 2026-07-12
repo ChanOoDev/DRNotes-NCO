@@ -39,4 +39,4 @@ jobs:
           echo "url=$URL" >> $GITHUB_OUTPUT
 
       - name: Output Deployment URL
-        run: echo "🚀 UAT Deployment: ${{ steps.deploy.outputs.url }}"
+        run: echo "UAT Deployment: ${{ steps.deploy.outputs.url }}"
