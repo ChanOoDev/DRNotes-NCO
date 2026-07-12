@@ -1,0 +1,215 @@
+name: Deploy Pipeline
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  # ──────────────────────────────────────────────
+  # Stage 1: CI (test, lint, build)
+  # ──────────────────────────────────────────────
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: 'app/package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+  # ──────────────────────────────────────────────
+  # Stage 1: Security Scans (parallel with CI)
+  # ──────────────────────────────────────────────
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run TruffleHog
+        uses: trufflesecurity/trufflehog@v3.95.9
+        with:
+          extra_args: --only-verified
+
+      - name: Scan for hardcoded secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  dependency-scan:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: 'app/package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+
+      - name: Run audit-ci
+        run: npx audit-ci --high
+
+  code-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+  container-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
+
+  # ──────────────────────────────────────────────
+  # Stage 2: Deploy to UAT (auto after CI + security pass)
+  # ──────────────────────────────────────────────
+  deploy-uat:
+    needs: [test, secret-scan, dependency-scan, code-scan, container-scan]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    environment: uat
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: 'app/package-lock.json'
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Pull Vercel Environment
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=uat --token=$VERCEL_TOKEN
+
+      - name: Build
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --token=$VERCEL_TOKEN
+
+      - name: Deploy to UAT
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          URL=$(vercel deploy --prebuilt --yes --token=$VERCEL_TOKEN)
+          echo "url=$URL" >> $GITHUB_OUTPUT
+
+      - name: Output Deployment URL
+        env:
+          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          echo "UAT Deployment: $DEPLOY_URL"
+
+  # ──────────────────────────────────────────────
+  # Stage 3: Deploy to Production (manual approval required)
+  # ──────────────────────────────────────────────
+  deploy-prod:
+    needs: [deploy-uat]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: 'app/package-lock.json'
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Pull Vercel Environment
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+
+      - name: Build
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --prod --token=$VERCEL_TOKEN
+
+      - name: Deploy to Production
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+
+      - name: Notify
+        run: |
+          echo "Production deployment complete!"
