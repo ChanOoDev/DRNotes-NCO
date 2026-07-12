@@ -4,18 +4,63 @@
 
 DR Notes uses a **sequential deployment pipeline**:
 
+```mermaid
+graph TD
+    A[Feature Branch] -->|Create PR| B[Pull Request]
+    B --> C[CI Checks]
+    B --> D[Security Scans]
+
+    C --> C1[Type Check]
+    C --> C2[Lint]
+    C --> C3[Build]
+
+    D --> D1[Secret Scan]
+    D --> D2[Dependency Scan]
+    D --> D3[CodeQL]
+    D --> D4[License Scan]
+    D --> D5[Container Scan]
+
+    C1 & C2 & C3 --> E{All Checks Pass?}
+    D1 & D2 & D3 & D4 & D5 --> E
+
+    E -->|Yes| F[Code Review + Merge]
+    E -->|No| G[Fix Issues]
+
+    F -->|Push to main| H[Deploy Pipeline]
+
+    H --> I[CI Tests]
+    H --> J[Security Scans]
+
+    I --> K{All Pass?}
+    J --> K
+
+    K -->|Yes| L[Deploy to UAT/Preview]
+    K -->|No| G
+
+    L --> M[Manual Approval Required]
+    M -->|Approve| N[Deploy to Production]
+    M -->|Reject| O[Investigate]
+
+    G -->|Fix + Push| B
+
+    style A fill:#e1f5fe
+    style B fill:#fff3e0
+    style L fill:#e8f5e9
+    style M fill:#fff9c4
+    style N fill:#c8e6c9
+    style G fill:#ffebee
+    style O fill:#ffebee
 ```
-Push to main
-    │
-    ├──► CI (test, lint, build)  ──┐
-    │                              ├──► Deploy to UAT/Preview (auto)
-    └──► Security Scan ───────────┘         │
-                                            ▼
-                                    Manual Approval ✓
-                                            │
-                                            ▼
-                                    Deploy to Production
-```
+
+### Pipeline Flow Summary
+
+| Stage | Trigger | Action |
+|-------|---------|--------|
+| PR Created | Feature branch → main | CI + Security checks run |
+| PR Merged | Push to main | Deploy pipeline starts |
+| UAT Deploy | All checks pass | Auto-deploy to preview |
+| Production | UAT deployed | **Manual approval required** |
+| Done | Approved | Auto-deploy to production |
 
 ---
 
