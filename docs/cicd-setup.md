@@ -30,8 +30,6 @@ Go to **Settings → Secrets and variables → Actions** and add:
 | `VERCEL_TOKEN` | Vercel API token | https://vercel.com/account/tokens → Create |
 | `VERCEL_ORG_ID` | Vercel org/team ID | Found in `.vercel/repo.json` after `vercel link` |
 | `VERCEL_PROJECT_ID` | Vercel project ID | Found in `.vercel/project.json` after `vercel link` |
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | https://supabase.com/dashboard → Project Settings → API |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key | Same as above |
 
 ### Vercel Project Setup
 
@@ -303,9 +301,9 @@ app/
 
 | Variable | Where | Description |
 |----------|-------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Vercel (Production + Preview) | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Vercel (Production + Preview) | Supabase anonymous key |
-| `SUPABASE_SERVICE_ROLE_KEY` | Vercel (Production + Preview) | Supabase service role key |
 | `VERCEL_TOKEN` | GitHub Secrets | Vercel API token |
 | `VERCEL_ORG_ID` | GitHub Secrets | Vercel organization ID |
 | `VERCEL_PROJECT_ID` | GitHub Secrets | Vercel project ID |
+| `NEXT_PUBLIC_SUPABASE_URL` | Vercel (Production + Preview) | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Vercel (Production + Preview) | Supabase anonymous key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Vercel (Production + Preview) | Supabase service role key |
