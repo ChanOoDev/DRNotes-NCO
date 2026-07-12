@@ -1,0 +1,11 @@
+{
+  "remoteName": "origin",
+  "projects": [
+    {
+      "id": "prj_P9raAhnUAI9QpbWqESjDVaRzOHax",
+      "name": "dr-notes-nco",
+      "directory": "app",
+      "orgId": "team_zymythw2HYK6eImavRIB2V4r"
+    }
+  ]
+}
